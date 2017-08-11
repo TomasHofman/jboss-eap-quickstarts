@@ -33,12 +33,18 @@ import java.util.Hashtable;
  */
 public class RemoteEJBClient {
 
+    private static Context context;
+
     public static void main(String[] args) throws Exception {
         // Invoke a stateless bean
         invokeStatelessBean();
+        context.close();
+        context = null;
+//        Thread.sleep(1000);
 
         // Invoke a stateful bean
         invokeStatefulBean();
+        context.close();
     }
 
     /**
@@ -108,7 +114,7 @@ public class RemoteEJBClient {
     private static RemoteCalculator lookupRemoteStatelessCalculator() throws NamingException {
         final Hashtable<String, String> jndiProperties = new Hashtable<>();
         jndiProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
-        final Context context = new InitialContext(jndiProperties);
+        context = new InitialContext(jndiProperties);
 
         // The JNDI lookup name for a stateless session bean has the syntax of:
         // ejb:<appName>/<moduleName>/<distinctName>/<beanName>!<viewClassName>
@@ -142,7 +148,7 @@ public class RemoteEJBClient {
     private static RemoteCounter lookupRemoteStatefulCounter() throws NamingException {
         final Hashtable<String, String> jndiProperties = new Hashtable<>();
         jndiProperties.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
-        final Context context = new InitialContext(jndiProperties);
+        context = new InitialContext(jndiProperties);
 
         // The JNDI lookup name for a stateful session bean has the syntax of:
         // ejb:<appName>/<moduleName>/<distinctName>/<beanName>!<viewClassName>?stateful

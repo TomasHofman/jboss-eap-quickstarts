@@ -16,44 +16,21 @@
  */
 package org.jboss.as.quickstarts.jms;
 
-import java.io.ObjectStreamClass;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Properties;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
-import javax.jms.IllegalStateException;
-import javax.jms.InvalidClientIDException;
-import javax.jms.InvalidDestinationException;
-import javax.jms.InvalidSelectorException;
+import javax.jms.JMSConsumer;
+import javax.jms.JMSContext;
 import javax.jms.JMSException;
-import javax.jms.JMSSecurityException;
-import javax.jms.MessageEOFException;
-import javax.jms.MessageFormatException;
-import javax.jms.MessageNotReadableException;
-import javax.jms.MessageNotWriteableException;
+import javax.jms.JMSProducer;
+import javax.jms.Message;
 import javax.jms.ObjectMessage;
-import javax.jms.ResourceAllocationException;
-import javax.jms.TransactionInProgressException;
-import javax.jms.TransactionRolledBackException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import javax.jms.IllegalStateRuntimeException;
-import javax.jms.InvalidClientIDRuntimeException;
-import javax.jms.InvalidDestinationRuntimeException;
-import javax.jms.InvalidSelectorRuntimeException;
-import javax.jms.JMSContext;
-import javax.jms.JMSProducer;
-import javax.jms.JMSRuntimeException;
-import javax.jms.JMSSecurityRuntimeException;
-import javax.jms.MessageFormatRuntimeException;
-import javax.jms.MessageNotWriteableRuntimeException;
-import javax.jms.ResourceAllocationRuntimeException;
-import javax.jms.TransactionInProgressRuntimeException;
-import javax.jms.TransactionRolledBackRuntimeException;
-
 
 public class HelloWorldJMSClient {
     private static final Logger log = Logger.getLogger(HelloWorldJMSClient.class.getName());
@@ -69,31 +46,6 @@ public class HelloWorldJMSClient {
     private static final String PROVIDER_URL = "http-remoting://127.0.0.1:8080";
 
     public static void main(String[] args) {
-
-
-        Class[] classes = {
-                // prior to JMS 2.0
-                IllegalStateException.class, InvalidClientIDException.class,
-                InvalidDestinationException.class, InvalidSelectorException.class, JMSException.class,
-                JMSSecurityException.class, MessageEOFException.class, MessageFormatException.class,
-                MessageNotReadableException.class, MessageNotWriteableException.class,
-                ResourceAllocationException.class, TransactionInProgressException.class,
-                TransactionRolledBackException.class,
-
-                // added in JMS 2.0
-                IllegalStateRuntimeException.class, InvalidClientIDRuntimeException.class,
-                InvalidDestinationRuntimeException.class, InvalidSelectorRuntimeException.class,
-                JMSRuntimeException.class, JMSSecurityRuntimeException.class,
-                MessageFormatRuntimeException.class, MessageNotWriteableRuntimeException.class,
-                ResourceAllocationRuntimeException.class,
-                TransactionInProgressRuntimeException.class,
-                TransactionRolledBackRuntimeException.class
-        };
-        for (Class cl: classes) {
-            ObjectStreamClass c = ObjectStreamClass.lookup(cl);
-            long serialID = c.getSerialVersionUID();
-            System.out.println(cl.getName() + " " + serialID);
-        }
 
         Context namingContext = null;
 
@@ -124,17 +76,29 @@ public class HelloWorldJMSClient {
             String content = System.getProperty("message.content", DEFAULT_MESSAGE);
 
             try (JMSContext context = connectionFactory.createContext(userName, password)) {
-                JMSProducer producer = context.createProducer();
+                /*JMSProducer producer = context.createProducer();
                 log.info("Sending " + count + " messages with content: " + content);
                 // Send the specified number of messages
                 for (int i = 0; i < count; i++) {
                     ObjectMessage message = context.createObjectMessage(new JMSException("test"));
                     producer.send(destination, message);
-                }
+                }*/
 
+                // Create the JMS consumer
+                JMSConsumer consumer = context.createConsumer(destination);
+                // Then receive the same number of messages that were sent
+                for (int i = 0; i < count; i++) {
+//                    JMSException message = consumer.receiveBody(JMSException.class, 5000);
+                    Message message = consumer.receive(3000);
+                    JMSException exception = message.getBody(JMSException.class);
+
+                    log.info("Received message with content " + exception.getMessage());
+                }
+            } catch (JMSException e) {
+                log.log(Level.SEVERE, e.getMessage(), e);
             }
         } catch (NamingException e) {
-            log.severe(e.getMessage());
+            log.log(Level.SEVERE, e.getMessage(), e);
         } finally {
             if (namingContext != null) {
                 try {

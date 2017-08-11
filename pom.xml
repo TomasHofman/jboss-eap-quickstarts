@@ -197,6 +197,7 @@
                 <module>helloworld</module>
                 <module>helloworld-html5</module>
                 <module>helloworld-jms</module>
+                <module>helloworld-jms2</module>
                 <module>helloworld-mbean</module>
                 <module>helloworld-mdb</module>
                 <module>helloworld-mdb-propertysubstitution</module>
