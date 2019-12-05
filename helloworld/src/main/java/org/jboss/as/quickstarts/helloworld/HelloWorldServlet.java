@@ -18,6 +18,8 @@ package org.jboss.as.quickstarts.helloworld;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -47,11 +49,15 @@ public class HelloWorldServlet extends HttpServlet {
 
     static String PAGE_FOOTER = "</body></html>";
 
+    private static Logger LOG = Logger.getLogger(HelloWorldServlet.class.getName());
+
     @Inject
     HelloService helloService;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        LOG.info("Hello from " + InetAddress.getLocalHost());
+
         resp.setContentType("text/html");
         PrintWriter writer = resp.getWriter();
         writer.println(PAGE_HEADER);
