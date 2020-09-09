@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.3">
+<!--    <ear-subdeployments-isolated>false</ear-subdeployments-isolated>-->
+    <deployment>
+        <dependencies>
+            <module name="org.apache.cxf" export="true"/>
+        </dependencies>
+    </deployment>
+    <sub-deployment name="ejb-in-ear-web.war">
+        <dependencies>
+<!--            <module name="org.apache.cxf"/>-->
+        </dependencies>
+    </sub-deployment>
+    <sub-deployment name="ejb-in-ear-ejb.jar">
+        <dependencies>
+<!--            <module name="org.apache.cxf" export="true"/>-->
+        </dependencies>
+    </sub-deployment>
+</jboss-deployment-structure>

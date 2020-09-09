@@ -37,7 +37,7 @@ public class ClientTest {
     /**
      * The name of the WAR Archive that will be used by Arquillian to deploy the application.
      */
-    private static final String APP_NAME = "helloworld-ws";
+    private static final String APP_NAME = "ejb-in-ear";
     /**
      * The path of the WSDL endpoint in relation to the deployed web application.
      */
@@ -86,9 +86,9 @@ public class ClientTest {
 
     @Before
     public void setup() {
-        if (true){
-            Assume.assumeFalse(true);
-        }
+//        if (true){
+//            Assume.assumeFalse(true);
+//        }
         try {
             client = new Client(new URL(deploymentUrl, WSDL_PATH));
         } catch (MalformedURLException e) {
